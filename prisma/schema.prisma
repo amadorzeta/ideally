@@ -12,8 +12,9 @@ datasource db {
     referentialIntegrity = "prisma"
 }
 
-model Example {
+model Task {
     id String @id @default(cuid())
+    description String
 }
 
 // Necessary for Next auth
