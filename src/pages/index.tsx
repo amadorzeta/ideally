@@ -1,30 +1,68 @@
 import type { NextPage } from "next";
 import { useState } from "react";
 import Head from "next/head";
-import Cursor from "../components/Cursor";
-import Input from "../components/Input";
-import Task from "../components/Task";
 import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const [isActive, setIsActive] = useState(false);
-  //const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
-  //const tasks = trpc.useQuery(["tasks.index", {}]);
-  const tasks = [
+
+  const [tasksArray, setTasksArray] = useState([
     "aprender react hooks contruyendo un custom cursor",
-    "armar el formulario on click",
     "aprender trpc para crear el endpoint",
     "aplicar estilos faltantes",
-  ];
+  ]);
 
-  const taskElements = tasks.map((task) => {
-    return <Task goal={task} />;
-  });
+  const Cursor = () => {
+    return (
+      <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center pointer-events-none">
+        <div className="bg-indigo-800 h-12 w-2 absolute"></div>
+        <div className="bg-indigo-800 h-12 w-2 absolute rotate-90"></div>
+      </div>
+    );
+  };
 
   const handleClick = () => {
-    console.log(isActive);
-    setIsActive(!isActive);
+    setIsActive((prevState) => !prevState);
   };
+
+  const TaskInput = () => {
+    const [goal, setGoal] = useState("");
+
+    const handleSubmit = () => {};
+    const handleChange = () => {};
+
+    return (
+      <div className="opacity-75 w-3/4 h-screen flex flex-col items-center cursor-auto">
+        <form className="w-full" onSubmit={handleSubmit}>
+          <input
+            className="w-3/4 border-4 border-black rounded-lg"
+            type="text"
+            value={goal}
+            onChange={handleChange}
+          />
+        </form>
+      </div>
+    );
+  };
+
+  const Task = ({ goal }) => {
+    return (
+      <div className="w-full py-4 border rounded-lg">
+        <p className="text-3xl underline">{goal}</p>
+      </div>
+    );
+  };
+
+  const taskElements = (
+    <div className="w-1/2 space-y-4 cursor-auto">
+      {tasksArray.map((task) => (
+        <Task goal={task} />
+      ))}
+    </div>
+  );
+
+  //const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
+  //const tasks = trpc.useQuery(["tasks.index", {}]);
 
   return (
     <>
@@ -42,8 +80,7 @@ const Home: NextPage = () => {
         <h2 className="text-6xl py-10 tracking-tighter">
           what would you like to do today?
         </h2>
-        <div className="w-1/2 space-y-4 cursor-auto">{taskElements}</div>
-        <Input active={isActive} />
+        {isActive ? <TaskInput /> : taskElements}
       </main>
     </>
   );
