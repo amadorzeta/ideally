@@ -32,10 +32,13 @@ const Home: NextPage = () => {
     const handleChange = () => {};
 
     return (
-      <div className="opacity-75 w-3/4 h-screen flex flex-col items-center cursor-auto">
-        <form className="w-full" onSubmit={handleSubmit}>
+      <div className="w-3/4 h-3/5 pb-40 cursor-auto">
+        <form
+          className="w-full h-full flex flex-col justify-center"
+          onSubmit={handleSubmit}
+        >
           <input
-            className="w-3/4 border-4 border-black rounded-lg"
+            className="w-full h-40 border-4 border-black rounded-lg"
             type="text"
             value={goal}
             onChange={handleChange}
