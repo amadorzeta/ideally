@@ -22,23 +22,26 @@ const Home: NextPage = () => {
   };
 
   const handleClick = () => {
+    console.log("handling");
     setIsActive((prevState) => !prevState);
   };
 
   const TaskInput = () => {
     const [goal, setGoal] = useState("");
 
+    const preventClick = (e) => {
+      console.log("preventing");
+      e.stopPropagation();
+    };
+
     const handleSubmit = () => {};
     const handleChange = () => {};
 
     return (
-      <div className="w-3/4 h-3/5 pb-40 cursor-auto">
-        <form
-          className="w-full h-full flex flex-col justify-center"
-          onSubmit={handleSubmit}
-        >
+      <div onClick={preventClick} className="w-3/4 h-3/5 cursor-auto">
+        <form className="w-full h-full justify-center" onSubmit={handleSubmit}>
           <input
-            className="w-full h-40 border-4 border-black rounded-lg"
+            className="z-50 w-full h-40 border-2 border-black rounded-lg pointer-events-none"
             type="text"
             value={goal}
             onChange={handleChange}
@@ -76,7 +79,7 @@ const Home: NextPage = () => {
       </Head>
       <main
         onClick={handleClick}
-        className="bg-neutral-100 h-screen flex flex-col items-center cursor-none font-serif text-zinc-800"
+        className="bg-neutral-100 h-screen flex flex-col items-center font-serif text-zinc-800"
       >
         <Cursor />
         <h1 className="text-8xl pt-10 tracking-tight text-black">Ideally,</h1>
