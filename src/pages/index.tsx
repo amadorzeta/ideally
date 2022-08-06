@@ -1,12 +1,12 @@
 import type { NextPage } from "next";
 import { useState } from "react";
 import Head from "next/head";
-import { trpc } from "../utils/trpc";
+//import { trpc } from "../utils/trpc";
 
 const Home: NextPage = () => {
   const [isActive, setIsActive] = useState(false);
 
-  const [tasksArray, setTasksArray] = useState([
+  const [tasks, setTasks] = useState([
     "aprender react hooks contruyendo un custom cursor",
     "aprender trpc para crear el endpoint",
     "aplicar estilos faltantes",
@@ -21,29 +21,40 @@ const Home: NextPage = () => {
     );
   };
 
-  const handleClick = () => {
-    console.log("handling");
-    setIsActive((prevState) => !prevState);
+  const toggleForm = () => {
+    setIsActive((currentState) => !currentState);
   };
 
-  const TaskInput = () => {
-    const [goal, setGoal] = useState("");
+  const addTask = (newTask) => {
+    console.log(newTask);
+    setTasks((currentState) => [...currentState, newTask]);
+    toggleForm();
+  };
 
-    const preventClick = (e) => {
-      console.log("preventing");
-      e.stopPropagation();
+  const TaskForm = ({ onSubmit }) => {
+    const [taskName, setTaskName] = useState("");
+
+    const preventClick = (event) => {
+      event.stopPropagation();
     };
 
-    const handleSubmit = () => {};
-    const handleChange = () => {};
+    const handleSubmit = (event) => {
+      event.preventDefault();
+      onSubmit(taskName);
+    };
+
+    const handleChange = (event) => {
+      setTaskName(event.target.value);
+    };
 
     return (
-      <div onClick={preventClick} className="w-3/4 h-3/5 cursor-auto">
+      <div onClick={preventClick} className="w-1/2">
         <form className="w-full h-full justify-center" onSubmit={handleSubmit}>
           <input
-            className="z-50 w-full h-40 border-2 border-black rounded-lg pointer-events-none"
+            autoFocus
+            className="z-50 w-full h-36 bg-zinc-100 border-none outline-none rounded-lg px-8 text-6xl text-slate-900"
             type="text"
-            value={goal}
+            value={taskName}
             onChange={handleChange}
           />
         </form>
@@ -51,18 +62,19 @@ const Home: NextPage = () => {
     );
   };
 
-  const Task = ({ goal }) => {
+  const Task = ({ taskName }) => {
     return (
-      <div className="w-full py-4 border rounded-lg">
-        <p className="text-3xl underline">{goal}</p>
+      <div className="w-full text-3xl space-x-4">
+        <span>#</span>
+        <span className="underline">{taskName}</span>
       </div>
     );
   };
 
   const taskElements = (
-    <div className="w-1/2 space-y-4 cursor-auto">
-      {tasksArray.map((task) => (
-        <Task goal={task} />
+    <div className="w-1/2 space-y-8">
+      {tasks.map((task, index) => (
+        <Task key={index} taskName={task} />
       ))}
     </div>
   );
@@ -78,15 +90,14 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main
-        onClick={handleClick}
-        className="bg-neutral-100 h-screen flex flex-col items-center font-serif text-zinc-800"
+        onClick={toggleForm}
+        className="bg-slate-900 h-screen flex flex-col items-center font-serif text-zinc-100"
       >
-        <Cursor />
-        <h1 className="text-8xl pt-10 tracking-tight text-black">Ideally,</h1>
+        <h1 className="text-8xl pt-10 font-medium tracking-tight">Ideally,</h1>
         <h2 className="text-6xl py-10 tracking-tighter">
           what would you like to do today?
         </h2>
-        {isActive ? <TaskInput /> : taskElements}
+        {isActive ? <TaskForm onSubmit={addTask} /> : taskElements}
       </main>
     </>
   );
