@@ -2,8 +2,8 @@ import React from "react";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 
-export default function Home(props: any) {
-  const { data, isLoading } = trpc.useQuery(["getAllTasks"]);
+export default function Home() {
+  const { data, isLoading } = trpc.useQuery(["questions.get-all"]);
 
   const [isActive, setIsActive] = React.useState(false);
 
