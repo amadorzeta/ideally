@@ -1,8 +1,9 @@
 import React from "react";
 import Head from "next/head";
+import { prisma } from "../server/db/client";
 //import { trpc } from "../utils/trpc";
 
-export default function Home() {
+export default function Home(props: any) {
   const [isActive, setIsActive] = React.useState(false);
 
   //const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
@@ -44,6 +45,7 @@ export default function Home() {
         <h2 className="text-6xl py-10 tracking-tighter">
           what would you like to do today?
         </h2>
+        <code>{props.tasks}</code>
         {isActive ? <TaskForm onSubmit={addTask} /> : taskElements}
       </main>
     </>
@@ -101,4 +103,14 @@ const Cursor = () => {
       <div className="bg-indigo-800 h-12 w-2 absolute rotate-90"></div>
     </div>
   );
+};
+
+export const getServerSideProps = async () => {
+  const tasks = await prisma.task.findMany();
+
+  return {
+    props: {
+      tasks: JSON.stringify(tasks),
+    },
+  };
 };
