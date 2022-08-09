@@ -3,31 +3,20 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 
 export default function Home() {
-  const { data, isLoading } = trpc.useQuery(["questions.get-all"]);
+  const { data, isLoading } = trpc.useQuery(["tasks.get-all"]);
 
   const [isActive, setIsActive] = React.useState(false);
-
-  const [tasks, setTasks] = React.useState([
-    "aprender trpc para crear el endpoint",
-    "aplicar estilos faltantes",
-  ]);
 
   const toggleForm = () => {
     setIsActive((currentState) => !currentState);
   };
 
-  const addTask = (newTask: string) => {
-    setTasks((currentState) => [...currentState, newTask]);
-    toggleForm();
-  };
-
   if (isLoading || !data) return <div>Loading...</div>;
-  return <div>{data[0]?.name}</div>;
 
   const taskElements = (
     <div className="w-1/2 space-y-8">
-      {tasks.map((task, index) => (
-        <Task key={index} taskName={task} />
+      {data.map((task, index) => (
+        <Task key={index} taskName={task.name} />
       ))}
     </div>
   );
@@ -45,29 +34,31 @@ export default function Home() {
         <h2 className="text-6xl py-10 tracking-tighter">
           what would you like to do today?
         </h2>
-        {isActive ? <TaskForm onSubmit={addTask} /> : taskElements}
+        {isActive ? <TaskForm /> : taskElements}
       </main>
     </>
   );
 }
 
-const TaskForm: React.FC<{ onSubmit: (newTask: string) => void }> = ({
-  onSubmit,
-}) => {
+const TaskForm: React.FC = () => {
+  const client = trpc.useContext();
+  const { mutate } = trpc.useMutation("tasks.create", {
+    onSuccess: () => {
+      client.invalidateQueries(["tasks.get-all"]);
+    },
+  });
   const [taskName, setTaskName] = React.useState("");
 
-  const preventClick = (event: { stopPropagation: () => void }) => {
+  const preventClick = (event) => {
     event.stopPropagation();
   };
 
-  const handleSubmit = (event: { preventDefault: () => void }) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    onSubmit(taskName);
+    mutate({ name: event.currentTargetvalue });
   };
 
-  const handleChange = (event: {
-    target: { value: React.SetStateAction<string> };
-  }) => {
+  const handleChange = (event) => {
     setTaskName(event.target.value);
   };
 

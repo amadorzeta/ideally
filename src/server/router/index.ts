@@ -7,7 +7,7 @@ import { taskRouter } from "./tasks";
 export const appRouter = createRouter()
   .transformer(superjson)
   .merge("auth.", authRouter)
-  .merge("questions.", taskRouter);
+  .merge("tasks.", taskRouter);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
