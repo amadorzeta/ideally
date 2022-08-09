@@ -1,16 +1,13 @@
 import React from "react";
 import Head from "next/head";
-import { prisma } from "../server/db/client";
-//import { trpc } from "../utils/trpc";
+import { trpc } from "../utils/trpc";
 
 export default function Home(props: any) {
+  const { data, isLoading } = trpc.useQuery(["getAllTasks"]);
+
   const [isActive, setIsActive] = React.useState(false);
 
-  //const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
-  //const tasks = trpc.useQuery(["tasks.index", {}]);
-
   const [tasks, setTasks] = React.useState([
-    "aprender react hooks contruyendo un custom cursor",
     "aprender trpc para crear el endpoint",
     "aplicar estilos faltantes",
   ]);
@@ -23,6 +20,9 @@ export default function Home(props: any) {
     setTasks((currentState) => [...currentState, newTask]);
     toggleForm();
   };
+
+  if (isLoading || !data) return <div>Loading...</div>;
+  return <div>{data[0]?.name}</div>;
 
   const taskElements = (
     <div className="w-1/2 space-y-8">
@@ -45,7 +45,6 @@ export default function Home(props: any) {
         <h2 className="text-6xl py-10 tracking-tighter">
           what would you like to do today?
         </h2>
-        <code>{props.tasks}</code>
         {isActive ? <TaskForm onSubmit={addTask} /> : taskElements}
       </main>
     </>
@@ -103,14 +102,4 @@ const Cursor = () => {
       <div className="bg-indigo-800 h-12 w-2 absolute rotate-90"></div>
     </div>
   );
-};
-
-export const getServerSideProps = async () => {
-  const tasks = await prisma.task.findMany();
-
-  return {
-    props: {
-      tasks: JSON.stringify(tasks),
-    },
-  };
 };
