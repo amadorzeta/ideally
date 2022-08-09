@@ -83,10 +83,18 @@ const TaskForm: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
 };
 
 const Task: React.FC<{ taskName: string }> = ({ taskName }) => {
+  const preventClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    event.stopPropagation();
+  };
+
   return (
-    <div className="w-full text-3xl space-x-4">
+    <div onClick={preventClick} className="w-full text-3xl space-x-4">
       <span>#</span>
-      <span className="underline">{taskName}</span>
+      <span className="underline decoration-2 underline-offset-4 hover:line-through hover:decoration-4 hover:decoration-orange-700">
+        {taskName}
+      </span>
     </div>
   );
 };
