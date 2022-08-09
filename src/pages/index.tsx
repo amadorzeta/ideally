@@ -34,31 +34,36 @@ export default function Home() {
         <h2 className="text-6xl py-10 tracking-tighter">
           what would you like to do today?
         </h2>
-        {isActive ? <TaskForm /> : taskElements}
+        {isActive ? <TaskForm onSubmit={toggleForm} /> : taskElements}
       </main>
     </>
   );
 }
 
-const TaskForm: React.FC = () => {
+const TaskForm: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
   const client = trpc.useContext();
+
   const { mutate } = trpc.useMutation("tasks.create", {
     onSuccess: () => {
       client.invalidateQueries(["tasks.get-all"]);
     },
   });
+
   const [taskName, setTaskName] = React.useState("");
 
-  const preventClick = (event) => {
+  const preventClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
     event.stopPropagation();
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    mutate({ name: event.currentTargetvalue });
+    mutate({ name: taskName });
+    onSubmit();
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTaskName(event.target.value);
   };
 
