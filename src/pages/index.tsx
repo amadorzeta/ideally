@@ -1,6 +1,7 @@
 import React from "react";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
+import { Task } from "@prisma/client";
 
 export default function Home() {
   const { data, isLoading } = trpc.useQuery(["tasks.get-all"]);
@@ -16,7 +17,7 @@ export default function Home() {
   const taskElements = (
     <div className="w-1/2 space-y-8">
       {data.map((task, index) => (
-        <Task key={index} taskName={task.name} />
+        <Task key={index} task={task} />
       ))}
     </div>
   );
@@ -82,18 +83,28 @@ const TaskForm: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
   );
 };
 
-const Task: React.FC<{ taskName: string }> = ({ taskName }) => {
-  const preventClick = (
+const Task: React.FC<{ task: Task }> = ({ task }) => {
+  const [achieved, setAchieved] = React.useState(task.achieved);
+
+  const toggleAchieved = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     event.stopPropagation();
+    setAchieved((currentState) => !currentState);
   };
 
+  //add a piece of styles to a variable depending on the achieved state, this should include a hover version as well.
+
   return (
-    <div onClick={preventClick} className="w-full text-3xl space-x-4">
+    <div
+      onClick={toggleAchieved}
+      className={`w-full text-3xl space-x-4 hover:line-through hover:decoration-4 hover:decoration-orange-700 ${
+        achieved ? "line-through decoration-4 decoration-orange-700" : null
+      }`}
+    >
       <span>#</span>
-      <span className="underline decoration-2 underline-offset-4 hover:line-through hover:decoration-4 hover:decoration-orange-700">
-        {taskName}
+      <span className="underline decoration-2 underline-offset-4">
+        {task.name}
       </span>
     </div>
   );
