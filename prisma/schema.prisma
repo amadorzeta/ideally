@@ -16,7 +16,6 @@ model Task {
     id String @id @default(cuid())
     createdAt DateTime @default(now())
     name String @db.VarChar(5000)
-    achieved Boolean @default(false)
     achievedAt DateTime?
 }
 

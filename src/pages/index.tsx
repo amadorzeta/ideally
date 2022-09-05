@@ -84,23 +84,33 @@ const TaskForm: React.FC<{ onSubmit: () => void }> = ({ onSubmit }) => {
 };
 
 const Task: React.FC<{ task: Task }> = ({ task }) => {
-  const [achieved, setAchieved] = React.useState(task.achieved);
+  const { mutate } = trpc.useMutation("tasks.mark-as-done", {
+    onSuccess: () => {
+      console.log("task marked as done");
+    },
+  });
+
+  const [achieved, setAchieved] = React.useState(task.achievedAt !== null);
 
   const toggleAchieved = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => {
     event.stopPropagation();
-    setAchieved((currentState) => !currentState);
-  };
 
-  //add a piece of styles to a variable depending on the achieved state, this should include a hover version as well.
+    if (!achieved) {
+      setAchieved((currentState) => !currentState);
+      mutate({
+        id: task.id,
+      });
+    }
+  };
 
   return (
     <div
       onClick={toggleAchieved}
-      className={`w-full text-3xl space-x-4 hover:line-through hover:decoration-4 hover:decoration-orange-700 ${
+      className={`${
         achieved ? "line-through decoration-4 decoration-orange-700" : null
-      }`}
+      } w-full text-3xl space-x-4 hover:line-through hover:decoration-4 hover:decoration-orange-700`}
     >
       <span>#</span>
       <span className="underline decoration-2 underline-offset-4">
